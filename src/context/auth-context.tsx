@@ -5,23 +5,34 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
+const adminUids = process.env.NEXT_PUBLIC_ADMIN_UIDS?.split(',') || [];
+
 type AuthContextType = {
   user: User | null;
   loading: boolean;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  isAdmin: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (user) {
+        setIsAdmin(adminUids.includes(user.uid));
+        console.log("Logged in user UID:", user.uid);
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     });
 
@@ -37,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

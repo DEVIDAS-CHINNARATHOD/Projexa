@@ -165,16 +165,16 @@ function ProjectUploadForm() {
 }
 
 export default function AdminPage() {
-    const { user, loading } = useAuth();
+    const { user, loading, isAdmin } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && !user) {
-            router.push('/login');
+        if (!loading && (!user || !isAdmin)) {
+            router.push('/');
         }
-    }, [user, loading, router]);
+    }, [user, loading, isAdmin, router]);
     
-    if (loading || !user) {
+    if (loading || !user || !isAdmin) {
         return (
             <div className="flex justify-center items-center h-[calc(100vh-10rem)]">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />

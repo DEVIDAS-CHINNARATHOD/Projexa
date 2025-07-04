@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
 
     const navLinks = [
         { href: "/projects", label: "Projects" },
@@ -23,7 +23,7 @@ export default function Header() {
         { href: "/chatbot", label: "AI Assistant" },
     ];
 
-    if (user) {
+    if (user && isAdmin) {
         navLinks.push({ href: "/admin", label: "Admin" });
     }
 
