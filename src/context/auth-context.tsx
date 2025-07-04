@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
+        console.log('Your Firebase UID is:', user.uid);
         setIsAdmin(adminUids.includes(user.uid));
       } else {
         setIsAdmin(false);
