@@ -16,6 +16,7 @@ const navLinks = [
     { href: "/projects", label: "Projects" },
     { href: "/request", label: "Request a Project" },
     { href: "/chatbot", label: "AI Assistant" },
+    { href: "/admin", label: "Admin" },
 ];
 
 export default function Header() {
@@ -97,7 +98,6 @@ export default function Header() {
                             <DropdownMenuLabel>{user.displayName || 'My Account'}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild><Link href="/dashboard" className="w-full cursor-pointer">Dashboard</Link></DropdownMenuItem>
-                            <DropdownMenuItem asChild><Link href="/admin" className="w-full cursor-pointer">Admin</Link></DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
                                 <LogOut className="mr-2 h-4 w-4" />
