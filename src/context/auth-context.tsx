@@ -5,7 +5,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
-const adminUids = process.env.NEXT_PUBLIC_ADMIN_UIDS?.split(',') || [];
+const adminUids = (process.env.NEXT_PUBLIC_ADMIN_UIDS || '').split(',').map(uid => uid.trim()).filter(Boolean);
 
 type AuthContextType = {
   user: User | null;
@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
-        console.log('Your Firebase UID is:', user.uid);
         setIsAdmin(adminUids.includes(user.uid));
       } else {
         setIsAdmin(false);
