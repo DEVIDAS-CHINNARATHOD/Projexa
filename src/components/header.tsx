@@ -12,17 +12,20 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-const navLinks = [
-    { href: "/projects", label: "Projects" },
-    { href: "/request", label: "Request a Project" },
-    { href: "/chatbot", label: "AI Assistant" },
-    { href: "/admin", label: "Admin" },
-];
-
 export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { user } = useAuth();
+
+    const navLinks = [
+        { href: "/projects", label: "Projects" },
+        { href: "/request", label: "Request a Project" },
+        { href: "/chatbot", label: "AI Assistant" },
+    ];
+
+    if (user) {
+        navLinks.push({ href: "/admin", label: "Admin" });
+    }
 
     const handleLogout = async () => {
         await signOut(auth);
