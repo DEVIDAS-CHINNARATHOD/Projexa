@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -28,12 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
-        console.log("--- Admin Access Debug ---");
-        console.log("Admin UIDs from .env:", adminUids);
-        console.log("Your logged-in UID:", user.uid);
         const userIsAdmin = adminUids.includes(user.uid);
-        console.log("Are you an admin?", userIsAdmin);
-        console.log("--------------------------");
         setIsAdmin(userIsAdmin);
       } else {
         setIsAdmin(false);

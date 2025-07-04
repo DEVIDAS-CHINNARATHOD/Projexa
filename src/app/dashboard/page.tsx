@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +42,26 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl mb-10">Your Dashboard</h1>
+      
+      <Card className="mb-10 bg-secondary/30 border-primary/50">
+        <CardHeader>
+            <CardTitle>Your User Information</CardTitle>
+            <CardDescription>Use this UID to grant yourself admin access.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <p className="text-sm text-muted-foreground">Your Firebase UID is:</p>
+            <code className="text-lg font-bold font-code bg-muted px-2 py-1 rounded-md mt-1 block overflow-x-auto">
+            {user.uid}
+            </code>
+            <p className="text-xs text-muted-foreground mt-4">
+                Copy this value and add it to the <code className="font-code bg-muted px-1 rounded-md">.env</code> file in the root of your project, like this:
+            </p>
+            <pre className="text-sm bg-background p-3 rounded-md overflow-x-auto font-code mt-2">
+{`NEXT_PUBLIC_ADMIN_UIDS=${user.uid}`}
+            </pre>
+        </CardContent>
+      </Card>
+      
       <div className="grid gap-10">
         <Card>
           <CardHeader>
