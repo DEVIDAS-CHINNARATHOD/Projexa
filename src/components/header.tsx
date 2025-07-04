@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Code, Menu, User } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Code, Menu, User, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { useAuth } from "@/context/auth-context";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navLinks = [
     { href: "/projects", label: "Projects" },
@@ -16,6 +20,22 @@ const navLinks = [
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user } = useAuth();
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        router.push('/');
+    };
+    
+    const getInitials = (name: string | null | undefined) => {
+        if (!name) return 'U';
+        const names = name.split(' ');
+        if (names.length > 1) {
+            return names[0][0] + names[names.length - 1][0];
+        }
+        return names[0][0];
+    }
 
     return (
         <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
@@ -62,22 +82,34 @@ export default function Header() {
                  ))}
             </nav>
             <div className="ml-auto">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="rounded-full">
-                            <User className="h-5 w-5" />
-                            <span className="sr-only">Toggle user menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild><Link href="/dashboard" className="w-full cursor-pointer">Dashboard</Link></DropdownMenuItem>
-                        <DropdownMenuItem asChild><Link href="/admin" className="w-full cursor-pointer">Admin</Link></DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer">Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {user ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="secondary" size="icon" className="rounded-full">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                                    <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                                </Avatar>
+                                <span className="sr-only">Toggle user menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>{user.displayName || 'My Account'}</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild><Link href="/dashboard" className="w-full cursor-pointer">Dashboard</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild><Link href="/admin" className="w-full cursor-pointer">Admin</Link></DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <Button asChild>
+                        <Link href="/login">Login</Link>
+                    </Button>
+                )}
             </div>
         </header>
     );
