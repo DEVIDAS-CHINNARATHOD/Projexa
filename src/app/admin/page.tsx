@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -184,7 +185,14 @@ export default function AdminPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
-      <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl mb-10">Admin Panel</h1>
+        <div className="mb-10">
+            <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl mb-2">
+                Welcome, {user.displayName || 'Admin'}!
+            </h1>
+            <p className="text-lg text-muted-foreground">
+                This is your central hub for managing projects, requests, and analytics.
+            </p>
+        </div>
       <Tabs defaultValue="projects">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="projects">Manage Projects</TabsTrigger>
