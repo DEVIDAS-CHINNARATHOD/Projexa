@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,8 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, provider);
       // On success, the onAuthStateChanged listener in AuthProvider will handle the redirect.
-    } catch (error: any) {
+    } catch (error: any)
+{
       console.error("Sign in error:", error);
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
           setError("The sign-in window was closed. Please try again.");
