@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
       if (user) {
         setIsAdmin(adminUids.includes(user.uid));
-        console.log("Logged in user UID:", user.uid);
       } else {
         setIsAdmin(false);
       }
