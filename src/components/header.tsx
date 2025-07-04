@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Code, Menu, User, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,10 @@ export default function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Navigation Menu</SheetTitle>
+                        <SheetDescription>A list of links to navigate the application.</SheetDescription>
+                    </SheetHeader>
                     <Link href="/" className="mr-6 flex items-center" prefetch={false}>
                         <Code className="h-6 w-6 text-primary" />
                         <span className="sr-only">Projexa AI</span>
