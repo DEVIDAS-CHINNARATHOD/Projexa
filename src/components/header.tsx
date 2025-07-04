@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Code, Menu, MountainIcon } from "lucide-react";
+import { Code, Menu, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 const navLinks = [
     { href: "/projects", label: "Projects" },
@@ -26,7 +27,7 @@ export default function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
-                    <Link href="#" className="mr-6 flex items-center" prefetch={false}>
+                    <Link href="/" className="mr-6 flex items-center" prefetch={false}>
                         <Code className="h-6 w-6 text-primary" />
                         <span className="sr-only">Projexa AI</span>
                     </Link>
@@ -61,9 +62,22 @@ export default function Header() {
                  ))}
             </nav>
             <div className="ml-auto">
-                <Button asChild>
-                    <Link href="/login">Login</Link>
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="secondary" size="icon" className="rounded-full">
+                            <User className="h-5 w-5" />
+                            <span className="sr-only">Toggle user menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild><Link href="/dashboard" className="w-full cursor-pointer">Dashboard</Link></DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href="/admin" className="w-full cursor-pointer">Admin</Link></DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="cursor-pointer">Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </header>
     );

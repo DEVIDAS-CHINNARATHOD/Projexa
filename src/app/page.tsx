@@ -99,13 +99,13 @@ export default function Home() {
                 Ready to Start Your Next Project?
               </h2>
               <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Join our community of developers and clients today.
+                Explore your dashboard and manage your projects.
               </p>
             </div>
             <div className="mx-auto w-full max-w-sm space-y-2">
                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground w-full">
-                <Link href="/login">
-                  Get Started Now
+                <Link href="/dashboard">
+                  Go to Dashboard
                 </Link>
               </Button>
             </div>

@@ -2,46 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-
-const mockProjects = [
-  {
-    id: '1',
-    title: "Smart Attendance System",
-    techStack: ["Python", "OpenCV", "Firebase"],
-    price: 499,
-    previewURL: "https://placehold.co/600x400.png",
-    tags: ["ML", "Computer Vision"],
-    dataAiHint: "facial recognition software"
-  },
-  {
-    id: '2',
-    title: "MERN-based Chat App",
-    techStack: ["MongoDB", "Express", "React", "Node.js"],
-    price: 799,
-    previewURL: "https://placehold.co/600x400.png",
-    tags: ["Web Dev", "Real-time"],
-    dataAiHint: "chat application interface"
-  },
-  {
-    id: '3',
-    title: "E-commerce Platform",
-    techStack: ["Next.js", "Stripe", "PostgreSQL"],
-    price: 1299,
-    previewURL: "https://placehold.co/600x400.png",
-    tags: ["Full-stack", "Payments"],
-    dataAiHint: "online store homepage"
-  },
-  {
-    id: '4',
-    title: "AI-Powered Blog Generator",
-    techStack: ["Python", "Flask", "GPT-3"],
-    price: 650,
-    previewURL: "https://placehold.co/600x400.png",
-    tags: ["AI", "Content Creation"],
-    dataAiHint: "artificial intelligence writing"
-  },
-];
-
+import Link from "next/link";
+import { mockProjects } from "@/data/projects";
 
 export default function ProjectsPage() {
   return (
@@ -57,14 +19,16 @@ export default function ProjectsPage() {
         {mockProjects.map(project => (
           <Card key={project.id} className="flex flex-col overflow-hidden transition-transform hover:scale-105 hover:shadow-primary/20 shadow-lg">
             <CardHeader className="p-0">
-              <Image 
-                src={project.previewURL} 
-                alt={project.title} 
-                width={600} 
-                height={400} 
-                className="w-full h-48 object-cover"
-                data-ai-hint={project.dataAiHint}
-              />
+               <Link href={`/projects/${project.id}`}>
+                <Image 
+                  src={project.images[0].url} 
+                  alt={project.title} 
+                  width={600} 
+                  height={400} 
+                  className="w-full h-48 object-cover"
+                  data-ai-hint={project.images[0].hint}
+                />
+              </Link>
             </CardHeader>
             <CardContent className="p-6 flex-grow">
               <CardTitle className="font-headline mb-2">{project.title}</CardTitle>
@@ -78,7 +42,9 @@ export default function ProjectsPage() {
               </CardDescription>
             </CardContent>
             <CardFooter className="p-6 bg-secondary/30">
-              <Button className="w-full">View Details</Button>
+              <Button className="w-full" asChild>
+                <Link href={`/projects/${project.id}`}>View Details</Link>
+              </Button>
             </CardFooter>
           </Card>
         ))}
