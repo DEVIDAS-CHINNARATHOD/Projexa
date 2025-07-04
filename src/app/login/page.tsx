@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Code, Loader2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,10 +33,17 @@ export default function LoginPage() {
     setError(null);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      await signInWithPopup(auth, provider);
+      // On success, the onAuthStateChanged listener in AuthProvider will handle the redirect.
     } catch (error: any) {
       console.error("Sign in error:", error);
-      setError(error.message);
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+          setError("The sign-in window was closed. Please try again.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+          setError("This app's domain is not authorized for authentication.");
+      } else {
+          setError("An unexpected error occurred. This can happen in preview environments. Please try again.");
+      }
       setLoading(false);
     }
   };
@@ -69,6 +76,9 @@ export default function LoginPage() {
             Sign in with Google
           </Button>
           {error && <p className="text-center text-sm text-destructive">{error}</p>}
+           <p className="text-xs text-center text-muted-foreground">
+            Note: Authentication might be blocked by the browser in this preview. If login fails, please ensure pop-ups are enabled for this site.
+          </p>
         </CardContent>
       </Card>
     </div>

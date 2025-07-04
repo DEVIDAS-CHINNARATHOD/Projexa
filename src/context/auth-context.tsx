@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
@@ -25,14 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // This helps process the redirect result from Google Sign-In
-    getRedirectResult(auth).catch((error) => {
-      // Log errors except for 'no-redirect-operation' which is normal
-      if (error.code !== 'auth/no-redirect-operation') {
-        console.error("Firebase redirect result error:", error);
-      }
-    });
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
