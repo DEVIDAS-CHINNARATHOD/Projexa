@@ -6,7 +6,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
-const adminUids = (process.env.NEXT_PUBLIC_ADMIN_UIDS || '').split(',').map(uid => uid.trim()).filter(Boolean);
+const adminUids = (process.env.NEXT_PUBLIC_ADMIN_UIDS || '').split(',').map(uid => uid.trim().replace(/['"]/g, '')).filter(Boolean);
 
 type AuthContextType = {
   user: User | null;
