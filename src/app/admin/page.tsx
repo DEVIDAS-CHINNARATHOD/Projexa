@@ -174,7 +174,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle>Requests</CardTitle>
               <CardDescription>Approve or reject custom project requests from users.</CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent className="space-y-2 h-96 flex items-center justify-center">
                 <p className="text-muted-foreground">Request management interface will be here.</p>
             </CardContent>
