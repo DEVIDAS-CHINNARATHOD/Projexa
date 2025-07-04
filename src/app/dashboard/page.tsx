@@ -22,16 +22,19 @@ const requestedProjects = [
 ];
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (loading) return;
+    if (!user) {
       router.push('/login');
+    } else if (isAdmin) {
+      router.push('/admin');
     }
-  }, [user, loading, router]);
+  }, [user, loading, isAdmin, router]);
   
-  if (loading || !user) {
+  if (loading || !user || isAdmin) {
     return (
         <div className="flex justify-center items-center h-[calc(100vh-10rem)]">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />

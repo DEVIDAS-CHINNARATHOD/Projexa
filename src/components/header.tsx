@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -104,7 +105,9 @@ export default function Header() {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>{user.displayName || 'My Account'}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild><Link href="/dashboard" className="w-full cursor-pointer">Dashboard</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={isAdmin ? '/admin' : '/dashboard'} className="w-full cursor-pointer">Dashboard</Link>
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
                                 <LogOut className="mr-2 h-4 w-4" />
