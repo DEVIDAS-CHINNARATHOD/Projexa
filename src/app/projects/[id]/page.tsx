@@ -1,14 +1,45 @@
 import { notFound } from 'next/navigation';
-import { mockProjects } from '@/data/projects';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ShoppingCart, Code } from 'lucide-react';
+import { db } from "@/lib/firebase";
+import { doc, getDoc, type DocumentData } from "firebase/firestore";
 
-export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
-  const project = mockProjects.find(p => p.id === params.id);
+interface Project {
+    id: string;
+    title: string;
+    description: string;
+    techStack: string[];
+    price: number;
+    images: { url: string; hint: string }[];
+    tags: string[];
+}
+
+async function getProject(id: string): Promise<Project | null> {
+    const docRef = doc(db, "projects", id);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+        return null;
+    }
+
+    const data = docSnap.data() as DocumentData;
+    return {
+        id: docSnap.id,
+        title: data.title,
+        description: data.description,
+        techStack: data.techStack,
+        price: data.price,
+        images: data.images,
+        tags: data.tags,
+    } as Project;
+}
+
+export default async function ProjectDetailsPage({ params }: { params: { id: string } }) {
+  const project = await getProject(params.id);
 
   if (!project) {
     notFound();

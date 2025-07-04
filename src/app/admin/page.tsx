@@ -5,18 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Loader2, Upload } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2, Upload, CheckCircle } from "lucide-react";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React, { useEffect } from "react";
+import { useActionState, useFormStatus } from 'react-dom';
+
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { uploadProject } from "./actions";
+import { Label } from "@/components/ui/label";
 
 
 const monthlySalesData = [
@@ -37,131 +38,89 @@ const userGrowthData = [
     { date: "2024-06-01", users: 1100 },
 ];
 
-const projectFormSchema = z.object({
-    title: z.string().min(5, { message: "Title must be at least 5 characters." }),
-    description: z.string().min(20, { message: "Description must be at least 20 characters." }),
-    techStack: z.string().min(1, { message: "Please enter at least one tech stack (comma-separated)." }),
-    price: z.coerce.number().positive({ message: "Please enter a valid positive price." }),
-    imageUrl: z.string().url({ message: "Please enter a valid image URL." }),
-    imageHint: z.string().min(2, { message: "Please provide a short hint for the image." }),
-});
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button type="submit" disabled={pending} size="lg" className="w-full">
+            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+            Upload Project
+        </Button>
+    )
+}
 
 function ProjectUploadForm() {
-    const form = useForm<z.infer<typeof projectFormSchema>>({
-        resolver: zodResolver(projectFormSchema),
-        defaultValues: {
-            title: "",
-            description: "",
-            techStack: "",
-            price: undefined,
-            imageUrl: "",
-            imageHint: "",
-        },
-    });
+    const initialState = { message: null, errors: {}, success: false };
+    const [state, formAction] = useActionState(uploadProject, initialState);
+    const formRef = React.useRef<HTMLFormElement>(null);
 
-    const { isSubmitting } = form.formState;
-
-    async function onSubmit(values: z.infer<typeof projectFormSchema>) {
-        // Simulate an API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        console.log("Project data submitted:", values);
-        alert("Project submitted successfully! Check the console for data.");
-        
-        form.reset();
-    }
+    useEffect(() => {
+        if (state.success) {
+            formRef.current?.reset();
+        }
+    }, [state.success]);
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Project Title</FormLabel>
-                            <FormControl>
-                                <Input placeholder="e.g., MERN-based Chat App" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="A real-time chat application built on the MERN stack..." className="min-h-[120px]" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                        control={form.control}
-                        name="techStack"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Tech Stack (comma-separated)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="MongoDB, Express, React, Node.js" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                     <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Price (INR)</FormLabel>
-                                <FormControl>
-                                    <Input type="number" placeholder="799" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+        <form ref={formRef} action={formAction} className="space-y-6">
+            {state.success && state.message && (
+                 <Alert variant="default" className="bg-accent/20 border-accent/50 text-foreground">
+                    <CheckCircle className="h-4 w-4 !text-accent" />
+                    <AlertTitle>Success</AlertTitle>
+                    <AlertDescription>{state.message}</AlertDescription>
+                </Alert>
+            )}
+             {!state.success && state.message && (
+                 <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{state.message}</AlertDescription>
+                </Alert>
+            )}
+            
+            <div className="space-y-2">
+                <Label htmlFor="title">Project Title</Label>
+                <Input id="title" name="title" placeholder="e.g., MERN-based Chat App" required />
+                {state.errors?.title && <p className="text-sm font-medium text-destructive">{state.errors.title[0]}</p>}
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" name="description" placeholder="A real-time chat application built on the MERN stack..." className="min-h-[120px]" required />
+                {state.errors?.description && <p className="text-sm font-medium text-destructive">{state.errors.description[0]}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label htmlFor="techStack">Tech Stack (comma-separated)</Label>
+                    <Input id="techStack" name="techStack" placeholder="MongoDB, Express, React, Node.js" required />
+                    {state.errors?.techStack && <p className="text-sm font-medium text-destructive">{state.errors.techStack[0]}</p>}
                 </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                        control={form.control}
-                        name="imageUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Primary Image URL</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://placehold.co/800x600.png" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                     <FormField
-                        control={form.control}
-                        name="imageHint"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Image Hint</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g., chat application" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                <div className="space-y-2">
+                    <Label htmlFor="price">Price (INR)</Label>
+                    <Input id="price" name="price" type="number" placeholder="799" required />
+                    {state.errors?.price && <p className="text-sm font-medium text-destructive">{state.errors.price[0]}</p>}
                 </div>
-                <Button type="submit" disabled={isSubmitting} size="lg" className="w-full">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                    Upload Project
-                </Button>
-            </form>
-        </Form>
+            </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label htmlFor="imageUrl">Primary Image URL</Label>
+                    <Input id="imageUrl" name="imageUrl" placeholder="https://placehold.co/800x600.png" required />
+                    {state.errors?.imageUrl && <p className="text-sm font-medium text-destructive">{state.errors.imageUrl[0]}</p>}
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="imageHint">Image Hint</Label>
+                    <Input id="imageHint" name="imageHint" placeholder="e.g., chat application" required />
+                    {state.errors?.imageHint && <p className="text-sm font-medium text-destructive">{state.errors.imageHint[0]}</p>}
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="tags">Tags (comma-separated)</Label>
+                <Input id="tags" name="tags" placeholder="e.g., Web Dev, AI, Full-stack" />
+                {state.errors?.tags && <p className="text-sm font-medium text-destructive">{state.errors.tags[0]}</p>}
+            </div>
+
+            <SubmitButton />
+        </form>
     )
 }
 
@@ -215,7 +174,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle>Requests</CardTitle>
               <CardDescription>Approve or reject custom project requests from users.</CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent className="space-y-2 h-96 flex items-center justify-center">
                 <p className="text-muted-foreground">Request management interface will be here.</p>
             </CardContent>
