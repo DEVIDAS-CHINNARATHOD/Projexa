@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Code, Loader2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export default function LoginPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,44 +27,30 @@ export default function LoginPage() {
       router.push('/dashboard');
     }
   }, [user, router]);
-  
-  useEffect(() => {
-    setLoading(true);
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // This is the signed-in user
-          const user = result.user;
-          console.log("User signed in with redirect:", user);
-          router.push('/dashboard');
-        }
-      })
-      .catch((error) => {
-        console.error("Error during redirect result:", error);
-        setError(error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [router]);
-
 
   const handleSignIn = async () => {
     setLoading(true);
     setError(null);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
-      // The page will redirect, and the result is handled in the useEffect
+      const result = await signInWithPopup(auth, provider);
+      const signedInUser = result.user;
+      console.log("User signed in with popup:", signedInUser);
+      router.push('/dashboard');
     } catch (error: any) {
       console.error("Sign in error:", error);
       setError(error.message);
+    } finally {
       setLoading(false);
     }
   };
 
-  if (user) {
-    return null; // or a loading spinner while redirecting
+  if (authLoading || user) {
+     return (
+        <div className="flex justify-center items-center h-[calc(100vh-10rem)]">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    )
   }
 
   return (
